@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8" />
+	<title>Daniel Rumfelt & Miranda Barnes</title>
+	<meta name="viewport" content="width=device-width,initial-scale=1" />
+	<meta name="description" content="" />
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+		integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+	<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"
+		integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+		crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"
+		integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct"
+		crossorigin="anonymous"></script>
+	<link th:href="@{/CSS/style.css}" rel="stylesheet">
+	<link type="text/css" href="/static/CSS/style.css" rel="stylesheet" />
+	<link rel="icon" href="favicon.png">
+</head>
+
+<body>
+	<div class="container" style="border: 1px solid #cecece" background-color: "black">
+		<div class="nasaLogo">
+			<h1>Mars Rover API Web Application
+				<img src="\Pictures\Daniel&MirandaCorpLogo.png" width="120" height="120" style="margin-left: 6em;">
+				<img src="\Pictures\nasalogo.png"  width="80" height="80">
+			</h1>
+		</div>
+		<div class="alert alert-warning alert-dismissible fade show" role="alert">
+			<h4 class="alert-heading">CST323 Milestone 2: Cloud Test Application on Laptop </h4>
+			<p>Thanks for visiting our Mars Web Application! This app is designed to collect image data gathered by
+				NASA's Curiosity, Opportunity, and Spirit rovers on Mars and make it more easily available to other
+				developers, educators, and citizen scientists. Each rover has its own set of photos stored in the
+				database, which can be queried separately. There are several possible queries that can be made against
+				the API. Photos are organized by the sol (Martian rotation or day) on which they were taken, counting up
+				from the rover's landing date. A photo taken on Curiosity's 1000th Martian sol exploring Mars, for
+				example, will have a sol attribute of 1000. If instead you prefer to search by the Earth date on which a
+				photo was taken, you can do that, too.
+
+				Along with querying by date, results can also be filtered by the camera with which it was taken and
+				responses will be limited to 25 photos per call. Queries that should return more than 25 photos will be
+				split onto several pages, which can be accessed by adding a 'page' param to the query.</p>
+			<hr>
+			<p class="mb-0">You do not need to authenticate in order to explore the NASA data. However, if you will be
+				intensively using the APIs. For the moment for this class we will use my developer key. You should sign
+				up for a NASA
+				developer key.</p>
+			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			</button>
+		</div>
+		<div "p-3 mb-2 bg-light text-dark">
+			<form method="post" action="" id="frmRoverType">
+				<input type="hidden" th:field="${photoEntity.marsApiRoverData}" />
+				<input type="hidden" th:field="${photoEntity.userId}" />
+				<input type="hidden" id="createUser" name="createUser" value="false"/>
+				<div class="btn-group btn-group-lg" role="group" style="margin: 1.5em 0em;">
+					<button type="button" class="btn btn-secondary" id="marsApiCuriosity">Curiousity</button>
+					<button type="button" class="btn btn-secondary" id="marsApiOpportunity">Opportunity</button>
+					<button type="button" class="btn btn-secondary" id="marsApiSpirit">Spirit</button>
+				</div>
+				<div class="row">
+					<div class="col-12 col-md-4">
+						<div class="form-check">
+							<!--If Camera is not an option disable the check box using thymeleaf attribution and using lists.
+						located in doc files https://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf#lists-->
+							<input class="form-check-input" type="checkbox" th:field="${photoEntity.cameraFhaz}"
+								th:attr="disabled=${!#lists.contains(validCameras, 'FHAZ') ? 'disabled' : 'false'}">
+							<label class="form-check-label" for="cameraFhaz1">
+								Front Hazard Avoidance Camera
+							</label>
+						</div>
+					</div>
+					<div class="col-12 col-md-4">
+						<div class="form-check">
+							<!--If Camera is not an option disable the check box using thymeleaf attr and using lists.
+						located in doc files https://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf#lists-->
+							<input class="form-check-input" type="checkbox" th:field="${photoEntity.cameraRhaz}"
+								th:attr="disabled=${!#lists.contains(validCameras, 'RHAZ') ? 'disabled' : 'false'}">
+							<label class="form-check-label" for="cameraRhaz1">
+								Rear Hazard Avoidance Camera
+							</label>
+						</div>
+					</div>
+					<div class="col-12 col-md-4">
+						<div class="form-check">
+							<!--If Camera is not an option disable the check box using thymeleaf attr and using lists.
+						located in doc files https://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf#lists-->
+							<input class="form-check-input" type="checkbox" th:field="${photoEntity.cameraMast}"
+								th:attr="disabled=${!#lists.contains(validCameras, 'MAST') ? 'disabled' : 'false'}">
+							<label class="form-check-label" for="cameraMast1">
+								Mast Camera
+							</label>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-12 col-md-4">
+						<div class="form-check">
+							<!--If Camera is not an option disable the check box using thymeleaf attr and using lists.
+						located in doc files https://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf#lists-->
+							<input class="form-check-input" type="checkbox" th:field="${photoEntity.cameraChemcam}"
+								th:attr="disabled=${!#lists.contains(validCameras, 'CHEMCAM') ? 'disabled' : 'false'}">
+							<label class="form-check-label" for="cameraChemcam1">
+								Chemistry and Camera Complex
+							</label>
+						</div>
+					</div>
+					<div class="col-12 col-md-4">
+						<div class="form-check">
+							<!--If Camera is not an option disable the check box using thymeleaf attr and using lists.
+						located in doc files https://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf#lists-->
+							<input class="form-check-input" type="checkbox" th:field="${photoEntity.cameraMahli}"
+								th:attr="disabled=${!#lists.contains(validCameras, 'MAHLI') ? 'disabled' : 'false'}">
+							<label class="form-check-label" for="cameraMahli1">
+								Mars Hand Lens Imager
+							</label>
+						</div>
+					</div>
+					<div class="col-12 col-md-4">
+						<div class="form-check">
+							<!--If Camera is not an option disable the check box using thymeleaf attr and using lists.
+						located in doc files https://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf#lists-->
+							<input class="form-check-input" type="checkbox" th:field="${photoEntity.cameraMardi}"
+								th:attr="disabled=${!#lists.contains(validCameras, 'MARDI') ? 'disabled' : 'false'}">
+							<label class="form-check-label" for="cameraMardi1">
+								Mars Descent Imager
+							</label>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-12 col-md-4">
+						<div class="form-check">
+							<!--If Camera is not an option disable the check box using thymeleaf attr and using lists.
+						located in doc files https://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf#lists-->
+							<input class="form-check-input" type="checkbox" th:field="${photoEntity.cameraNavcam}"
+								th:attr="disabled=${!#lists.contains(validCameras, 'NAVCAM') ? 'disabled' : 'false'}">
+							<label class="form-check-label" for="cameraNavcam1">
+								Navigation Camera
+							</label>
+						</div>
+					</div>
+					<div class="col-12 col-md-4">
+						<div class="form-check">
+							<!--If Camera is not an option disable the check box using thymeleaf attr and using lists.
+						located in doc files https://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf#lists-->
+							<input class="form-check-input" type="checkbox" th:field="${photoEntity.cameraPancam}"
+								th:attr="disabled=${!#lists.contains(validCameras, 'PANCAM') ? 'disabled' : 'false'}">
+							<label class="form-check-label" for="cameraPancam1">
+								Panoramic Camera
+							</label>
+						</div>
+					</div>
+					<div class="col-12 col-md-4">
+						<div class="form-check">
+							<!--If Camera is not an option disable the check box using thymeleaf attr and using lists.
+						located in doc files https://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf#lists-->
+							<input class="form-check-input" type="checkbox" th:field="${photoEntity.cameraMinites}"
+								th:attr="disabled=${!#lists.contains(validCameras, 'MINITES') ? 'disabled' : 'false'}">
+							<label class="form-check-label" for="cameraMinites1">
+								Miniature Thermal Emission Spectrometer (Mini-TES)
+							</label>
+						</div>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label for="marsSol" class="col-form-label col-form-label-lg">Mars Sol (Mars Day): </label>
+					<input class="form-control form-control-lg" type="number" th:field="${photoEntity.marsSol}" min="0" />
+
+				</div>
+				<div class="row">
+					<div class="col-3 col-md-2" style="margin-bottom: .8em;">
+						<button type="submit" class="btn btn-primary btn-lg">Submit</button>
+					</div>
+					<div class="col-9 col-md-10" style="margin-top: 0.7em">
+						<input type="checkbox" th:field="${photoEntity.rememberPreferences}" />
+						<label for="rememberPreferences1">Remember Device Preferences</label>
+					</div>
+			</form>
+		</div>
+		<div th:each="index : ${#numbers.sequence(0,roverData.photos.size(), 3)}" class="row"
+			style="margin-bottom: 1.5em;">
+			<div class="col-sm" th:if="${index < roverData.photos.size()}">
+				<img th:src="${roverData.photos[index].imgSrc}" class="img-fluid" />
+			</div>
+			<div class="col-sm" th:if="${index+1 < roverData.photos.size()}">
+				<img th:src="${roverData.photos[index+1].imgSrc}" class="img-fluid" />
+			</div>
+			<div class="col-sm" th:if="${index+2 < roverData.photos.size()}">
+				<img th:src="${roverData.photos[index+2].imgSrc}" class="img-fluid" />
+			</div>
+			<div class="col-sm" th:if="${index+3 < roverData.photos.size()}">
+				<img th:src="${roverData.photos[index+3].imgSrc}" class="img-fluid" />
+			</div>
+		</div>
+		<!--		<img th:each="photo : ${roverData.photos}" th:src="${photo.imgSrc}" />-->
+		<footer>
+			<small>©
+				<script>document.write(new Date().getFullYear())</script> Daniel&MirandaCorp. All Rights Reserved.
+			</small>
+		</footer>
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+			crossorigin="anonymous"></script>
+
+
+	</div>
+	<script type="text/javascript" src="/JavaScript/index.js"></script>
+</body>
+
+</html>
